@@ -7,6 +7,11 @@ on:
         description: "Model ID"
         required: true
 
+      version_index:
+        description: "Version Index"
+        required: false
+        default: "0"
+
 jobs:
   replicate_civitai_model:
     runs-on: ubuntu-latest
@@ -32,7 +37,7 @@ jobs:
         run: |
           curl -sSL -H "Authorization: Bearer $CIVITAI_API_KEY" -o model.json "https://civitai.com/api/v1/models/${{ github.event.inputs.model_id }}"
           mkdir -p dl
-          jq -c '.modelVersions[0].files[]' model.json | while read -r item; do
+          jq -c '.modelVersions[${{ github.event.inputs.version_index }}].files[]' model.json | while read -r item; do
             FILENAME="dl/$(echo "$item" | jq -r '.name')"
             FILE_URL="$(echo "$item" | jq -r '.downloadUrl')"
             echo "Downloading $FILENAME from $FILE_URL"
