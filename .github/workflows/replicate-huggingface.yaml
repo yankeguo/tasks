@@ -21,7 +21,7 @@ jobs:
           cache: "pip"
           cache-dependency-path: "replicate-huggingface/requirements.txt"
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install wheel
@@ -35,3 +35,11 @@ jobs:
           chmod +x coscli
           echo $COSCLI_CONFIG_BASE64 | base64 -d > ~/.cos.yaml
           ./coscli ls cos://assets
+
+      - name: Download and Replicate Model
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN_RO }}
+        run: |
+          huggingface-cli download --local-dir-use-symlinks False --local-dir "${{ github.event.inputs.model_id }}" "${{ github.event.inputs.model_id }}"
+          rm -rf "${{ github.event.inputs.model_id }}/.git*" "${{ github.event.inputs.model_id }}/.cache"
+          ./coscli cp -r --part-size 128 "${{ github.event.inputs.model_id }}/" "cos://assets/huggingface.co/${{ github.event.inputs.model_id }}/"
