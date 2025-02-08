@@ -27,12 +27,14 @@ jobs:
           ./coscli ls cos://assets
 
       - name: Download and Replicate Model
+        env:
+          CIVITAI_API_KEY: ${{ secrets.CIVITAI_API_KEY }}
         run: |
-          curl -sSL -H 'Authorization: Bearer ${{ secrets.CIVITAI_API_KEY }}' -o model.json "https://api.civitai.com/models/${{ github.event.inputs.model_id }}"
+          curl -sSL -H "Authorization: Bearer $CIVITAI_API_KEY" -o model.json "https://civitai.com/api/v1/models/${{ github.event.inputs.model_id }}"
           mkdir -p dl
           jq -c '.modelVersions[0].files[]' model.json | while read -r item; do
-            filename="dl/$(echo "$item" | jq -r '.name')"
-            file_url="$(echo "$item" | jq -r '.downloadUrl')"
-            echo curl -sSL -H 'Authorization: Bearer ${{ secrets.CIVITAI_API_KEY }}' -o "$filename" "$file_url"
+            FILENAME="dl/$(echo "$item" | jq -r '.name')"
+            FILE_URL="$(echo "$item" | jq -r '.downloadUrl')"
+            echo curl -sSL -H "Authorization: Bearer $CIVITAI_API_KEY" -o "$FILENAME" "$FILE_URL"
           done
           echo ./coscli cp -r --part-size 128 "dl/" "cos://assets/civitai.com/models/${{ github.event.inputs.model_id }}/"
