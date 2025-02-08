@@ -8,7 +8,7 @@ on:
         required: true
 
 jobs:
-  replicate_huggingface:
+  replicate_civitai_model:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -30,7 +30,7 @@ jobs:
         run: |
           curl -sSL -H 'Authorization: Bearer ${{ secrets.CIVITAI_API_KEY }}' -o model.json "https://api.civitai.com/models/${{ github.event.inputs.model_id }}"
           mkdir -p dl
-          jq -c '.modelVersions[0].files[]' | while read -r item; do
+          jq -c '.modelVersions[0].files[]' model.json | while read -r item; do
             filename="dl/$(echo "$item" | jq -r '.name')"
             file_url="$(echo "$item" | jq -r '.downloadUrl')"
             echo curl -sSL -H 'Authorization: Bearer ${{ secrets.CIVITAI_API_KEY }}' -o "$filename" "$file_url"
