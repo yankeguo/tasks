@@ -38,4 +38,4 @@ jobs:
             echo "Downloading $FILENAME from $FILE_URL"
             curl -SL -H "Authorization: Bearer $CIVITAI_API_KEY" -o "$FILENAME" "$FILE_URL"
           done
-          ./coscli cp -r --part-size 128 "dl/" "cos://assets/civitai.com/models/${{ github.event.inputs.model_id }}/"
+          ./coscli sync -r --part-size 128 "dl/" "cos://assets/civitai.com/models/${{ github.event.inputs.model_id }}/"
