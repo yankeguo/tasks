@@ -35,6 +35,7 @@ jobs:
           jq -c '.modelVersions[0].files[]' model.json | while read -r item; do
             FILENAME="dl/$(echo "$item" | jq -r '.name')"
             FILE_URL="$(echo "$item" | jq -r '.downloadUrl')"
-            curl -sSL -H "Authorization: Bearer $CIVITAI_API_KEY" -o "$FILENAME" "$FILE_URL"
+            echo "Downloading $FILENAME from $FILE_URL"
+            curl -SL -H "Authorization: Bearer $CIVITAI_API_KEY" -o "$FILENAME" "$FILE_URL"
           done
           ./coscli cp -r --part-size 128 "dl/" "cos://assets/civitai.com/models/${{ github.event.inputs.model_id }}/"
