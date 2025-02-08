@@ -1,2 +1,3 @@
-# tasks
-This repository is an automation hub for tasks, designed to enhance development efficiency and project maintenance.
+# Tasks
+
+Various Automation tasks using GitHub Actions
